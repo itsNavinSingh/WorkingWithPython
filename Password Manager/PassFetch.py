@@ -1,16 +1,30 @@
-import pandas as pd
-def save_pass(Password_data):
-    old_pass = pd.read_csv('password.csv')
-    if Password_data['Website'] not in old_pass['Website'].unique():
-        new_pass = pd.DataFrame(Password_data)
-        new_data = pd.concat([old_pass, new_pass], ignore_index=True)
-        new_data.to_csv('password.csv', mode='w', index=False)
+import json
+def save_pass(Password_data_list):
+    try:
+        with open('password.json') as passworddata:
+            old_pass = json.load(passworddata)
+    except:
+        with open('password.json', 'w') as new_file:
+            data_entries = {
+                Password_data_list['Website'] : {
+                'Username' : Password_data_list['Username'],
+                'Password' : Password_data_list['Password'],
+                },
+            }
+            json.dump(data_entries, new_file, indent=4)
     else:
-        site = Password_data['Website'][0]
-        old_pass.loc[old_pass[old_pass['Website'] == site].index] = [Password_data['Website'][0], Password_data['Username'][0], Password_data['Password'][0]]
-        old_pass.to_csv('password.csv', mode='w', index=False)
+        old_pass[Password_data_list['Website']] = {
+            'Username' : Password_data_list['Username'],
+            'Password' : Password_data_list['Password'],
+        }
+        with open('password.json', mode='w') as append_data:
+            json.dump(old_pass, append_data, indent=4)
 
 def fetch_pass(website):
-    data = pd.read_csv('password.csv', index_col='Website')
-    info = data.loc[website]
-    return info
+    with open ('password.json') as master_data:
+        all_data = json.load(master_data)
+        if website in all_data.keys():
+            info = all_data[website]
+            return info
+        else:
+            raise FileNotFoundError()

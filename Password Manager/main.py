@@ -22,9 +22,9 @@ def save_password():
         confirm = messagebox.askokcancel(title=Website_Name, message=f'Username: {Mail_Name}\nPassword: {Password_Name}\nDo you want to save?')
         if confirm:
             user_data = {
-                'Website': [Website_Name],
-                'Username': [Mail_Name],
-                'Password': [Password_Name]
+                'Website': Website_Name,
+                'Username': Mail_Name,
+                'Password': Password_Name
             }
             PassFetch.save_pass(user_data)
             website_Entry.delete(0, tkinter.END)
